@@ -5,6 +5,9 @@ const bot = Wechaty.instance()
 const Gdax = require('gdax');
 const publicClient = new Gdax.PublicClient('ETH-USD');
 
+const apiai = require('apiai');
+const app = apiai("5701b2d722654bc6867194ad6a42cace");
+
 bot
 .on('scan', (url, code)=>{
     let loginUrl = url.replace('qrcode', 'l')
@@ -52,8 +55,22 @@ bot
 	};
 
 	publicClient.getProductTicker(callback);
-    } else {       
-	m.say("I'm dumb, sorry [Facepalm] ... but I know the price of eth")
+    } else if(/^(Haha|haha|哈哈哈|哈哈)$/.test(content)){       
+	m.say("[Facepalm]")
+    } else {
+    var request = app.textRequest(content,{
+        sessionId: 'wechaty-English'
+    });
+        
+    request.on("response", function (response) {
+        m.say(response.result.fulfillment.speech);
+    });
+
+    request.on("error", function(error) {
+        console.log("error: " + error);
+    });
+
+    request.end();
     }
  
 
